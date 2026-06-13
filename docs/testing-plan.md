@@ -25,8 +25,8 @@ This document is the source of truth for adding and maintaining the DoDesk test 
 | 5b. Unit tests — schemas | ✅ Done | All resource `*.schema.ts` files |
 | 6. Service tests (mocked) | ✅ Done | `issue`, `team`, `workspace` services |
 | 7. Integration tests | ✅ Done | Health, issue, workspace, team, comment, filter, user |
-| 8. CI gate | ✅ Done | `test:all:coverage` enforces ≥85% lines |
-| 9. Client tests | ⬜ Planned | hooks, stores, lib |
+| 8. CI gate | ✅ Done | Backend + client Vitest in GitHub Actions |
+| 9. Client tests | 🟡 In progress | lib, hooks, stores — services next |
 
 ---
 
@@ -40,13 +40,54 @@ This document is the source of truth for adding and maintaining the DoDesk test 
 | `@vitest/coverage-v8` | Coverage reports | Built-in; shows % lines/branches covered |
 | [Supertest](https://github.com/ladjs/supertest) *(phase 7)* | HTTP integration tests | Standard for Express; hits `app` without starting a server |
 
-### Client (future — phase 9)
+### Client (active — phase 9)
 
 | Library | Purpose |
 |---------|---------|
 | Vitest | Same runner as backend |
-| React Testing Library | Test components by user-visible behavior |
-| MSW | Mock API calls from stores and hooks |
+| React Testing Library | Hook tests via `renderHook` |
+| jsdom | Browser-like environment for hooks/stores |
+| `@vitest/coverage-v8` | Coverage on lib, hooks, stores |
+
+### Client folder structure
+
+```
+client/
+├── lib/                    # production
+├── hooks/
+├── stores/
+├── tests/
+│   ├── unit/               # mirrors lib/, hooks/, stores/
+│   │   ├── lib/
+│   │   ├── hooks/
+│   │   └── stores/
+│   └── helpers/
+│       ├── setup.ts
+│       └── fixtures.ts
+├── vitest.config.ts
+└── tsconfig.test.json
+```
+
+### Client commands
+
+From **project root**:
+
+```bash
+npm run test:client            # run client unit tests
+npm run test:client:coverage   # with coverage report
+```
+
+From **`client/`**:
+
+```bash
+npm test
+npm run test:coverage
+npm run test:watch
+```
+
+Open HTML coverage: `open client/coverage/index.html`
+
+### Client (future)
 
 ### Test database (phase 7)
 

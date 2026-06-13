@@ -5,6 +5,8 @@
     "dev:backend": "npm run dev --prefix backend",
     "dev:client": "npm run dev --prefix client",
     "test": "npm run test --prefix backend",
+    "test:client": "npm run test --prefix client",
+    "test:client:coverage": "npm run test:coverage --prefix client",
     "test:coverage": "npm run test:coverage --prefix backend",
     "test:all": "npm run test:all --prefix backend",
     "test:all:coverage": "npm run test:all:coverage --prefix backend",
