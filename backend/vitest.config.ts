@@ -12,6 +12,8 @@ export default defineConfig({
     environment: 'node',
     include: ['tests/**/*.test.ts'],
     setupFiles: ['tests/helpers/setup.ts'],
+    globalTeardown: './tests/helpers/global-teardown.ts',
+    fileParallelism: process.env.VITEST_WITH_DB === '1' ? false : true,
     coverage: {
       provider: 'v8',
       reporter: ['text', 'html'],
@@ -23,6 +25,9 @@ export default defineConfig({
         'src/lib/auth.ts',
         'src/shared/db/**',
       ],
+      thresholds: process.env.VITEST_WITH_DB === '1'
+        ? { lines: 58, branches: 40, functions: 40, statements: 58 }
+        : undefined,
     },
   },
 });
