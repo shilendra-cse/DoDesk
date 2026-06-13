@@ -61,12 +61,8 @@ export const WorkspaceForm: React.FC<WorkspaceFormProps> = ({
     e.preventDefault();
 
     try {
-      const result = await createWorkspace(formData);
-      if (result.status === 201) {
-        onSuccess(result.workspace);
-      } else {
-        alert(result.message);
-      }
+      const workspace = await createWorkspace(formData);
+      onSuccess(workspace);
     } catch (error) {
       const errorMessage = (error as Error).message || 'Error creating workspace';
       alert(errorMessage);
