@@ -16,10 +16,4 @@ export const userQuery = {
         lastActiveWorkspace: true,
       },
     }),
-
-  findByIdMinimal: (id: string) =>
-    prisma.user.findUnique({
-      where: { id },
-      select: userSelect,
-    }),
 };
