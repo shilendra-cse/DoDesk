@@ -78,6 +78,24 @@ describe('useSavedFilterStore', () => {
     expect(state.selectedViewId).toBe('none');
   });
 
+  it('deleteFilter keeps default when deleting a different filter', async () => {
+    const defaultFilter = buildSavedFilter({ id: 'filter-1' });
+    const otherFilter = buildSavedFilter({ id: 'filter-2' });
+    useSavedFilterStore.setState({
+      savedFilters: [defaultFilter, otherFilter],
+      defaultFilter,
+      selectedViewId: 'filter-2',
+    });
+    vi.mocked(savedFilterService.deleteFilter).mockResolvedValue(undefined);
+
+    await useSavedFilterStore.getState().deleteFilter('workspace-1', 'filter-2');
+
+    const state = useSavedFilterStore.getState();
+    expect(state.savedFilters).toEqual([defaultFilter]);
+    expect(state.defaultFilter).toEqual(defaultFilter);
+    expect(state.selectedViewId).toBe('none');
+  });
+
   it('setDefaultFilter updates default and selected view', async () => {
     const filter = buildSavedFilter({ id: 'filter-1', is_default: true });
     vi.mocked(savedFilterService.setDefaultFilter).mockResolvedValue(filter);

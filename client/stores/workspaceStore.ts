@@ -101,7 +101,7 @@ export const useWorkspaceStore = create<WorkspaceStoreState>((set, get) => ({
         role: 'member' as const,
         user: {
           id: member.user_id,
-          name: member.name,
+          name: member.name ?? '',
           email: member.email
         }
       }))

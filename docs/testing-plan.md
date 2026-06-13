@@ -355,30 +355,13 @@ Also test: 401 without auth, 400 on validation errors, 404 on missing resources.
 
 ### Phase 6 — CI gate
 
-Add `.github/workflows/test.yml`:
+`.github/workflows/ci.yml` runs on push/PR to `main`:
 
-```yaml
-on: [push, pull_request]
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    services:
-      postgres: ...
-    steps:
-      - uses: actions/checkout@v4
-      - run: npm ci --prefix backend
-      - run: npx prisma migrate deploy --prefix backend
-      - run: npm test --prefix backend
-      - run: npm run test:all --prefix backend
-```
+1. **Lint** — `eslint` (backend), `next lint` (client)
+2. **Typecheck** — `tsc --noEmit` on src (+ backend tests)
+3. **Test** — `test:all:coverage` (backend + Postgres), `test:coverage` (client)
 
-Add coverage thresholds to `vitest.config.ts` once stable:
-
-```typescript
-coverage: {
-  thresholds: { lines: 80, branches: 80, functions: 80, statements: 80 },
-}
-```
+From project root: `npm run lint`, `npm run typecheck`, `npm run ci` (full local CI).
 
 ### Phase 7 — Client tests
 

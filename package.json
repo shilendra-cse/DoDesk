@@ -4,6 +4,8 @@
     "dev": "concurrently -n backend,client -c blue,green \"npm run dev --prefix backend\" \"npm run dev --prefix client\"",
     "dev:backend": "npm run dev --prefix backend",
     "dev:client": "npm run dev --prefix client",
+    "lint": "npm run lint --prefix backend && npm run lint --prefix client",
+    "typecheck": "npm run typecheck --prefix backend && npm run typecheck --prefix client",
     "test": "npm run test --prefix backend",
     "test:client": "npm run test --prefix client",
     "test:client:coverage": "npm run test:coverage --prefix client",
@@ -11,6 +13,7 @@
     "test:all": "npm run test:all --prefix backend",
     "test:all:coverage": "npm run test:all:coverage --prefix backend",
     "test:watch": "npm run test:watch --prefix backend",
+    "ci": "npm run lint && npm run typecheck && npm run test:all:coverage --prefix backend && npm run test:coverage --prefix client",
     "build": "next build",
     "start": "next start"
   },

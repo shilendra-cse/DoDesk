@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { sendSuccess, sendError } from '@/shared/responses/apiResponse';
 import { AppError } from '@/shared/errors/AppError';
 import { createMockResponse } from '../../../helpers/express';

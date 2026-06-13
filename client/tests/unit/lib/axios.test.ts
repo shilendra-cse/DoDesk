@@ -20,7 +20,7 @@ describe('api axios instance', () => {
   });
 
   it('signs out and redirects on 401 request errors', async () => {
-    const handler = (api.interceptors.request as { handlers: Array<{ rejected: (error: unknown) => Promise<unknown> }> })
+    const handler = (api.interceptors.request as unknown as { handlers: Array<{ rejected: (error: unknown) => Promise<unknown> }> })
       .handlers[0]!.rejected;
 
     await expect(handler({ response: { status: 401 } })).rejects.toEqual({
@@ -32,7 +32,7 @@ describe('api axios instance', () => {
   });
 
   it('rejects non-401 errors without signing out', async () => {
-    const handler = (api.interceptors.request as { handlers: Array<{ rejected: (error: unknown) => Promise<unknown> }> })
+    const handler = (api.interceptors.request as unknown as { handlers: Array<{ rejected: (error: unknown) => Promise<unknown> }> })
       .handlers[0]!.rejected;
 
     await expect(handler({ response: { status: 500 } })).rejects.toEqual({
@@ -43,7 +43,7 @@ describe('api axios instance', () => {
   });
 
   it('passes through successful request configs', () => {
-    const handler = (api.interceptors.request as { handlers: Array<{ fulfilled: (value: unknown) => unknown }> })
+    const handler = (api.interceptors.request as unknown as { handlers: Array<{ fulfilled: (value: unknown) => unknown }> })
       .handlers[0]!.fulfilled;
     const config = { headers: {} };
 

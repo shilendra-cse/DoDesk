@@ -1,5 +1,4 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { AppError } from '@/shared/errors/AppError';
 import { ErrorCodes } from '@/shared/errors/errorCodes';
 import { buildTeamWithMembers } from '../../../helpers/fixtures';
 

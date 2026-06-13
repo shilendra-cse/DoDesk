@@ -32,7 +32,7 @@ describe('formatIssue', () => {
 
     expect(formatted.id).toBe('issue-1');
     expect(formatted.title).toBe('Fix login bug');
-    expect(formatted.creator.email).toBe('alice@example.com');
+    expect(formatted.creator?.email).toBe('alice@example.com');
   });
 });
 
@@ -56,7 +56,7 @@ describe('formatDeletedIssue', () => {
       team: { key: 'ENG' },
     };
 
-    const formatted = formatDeletedIssue(issue);
+    const formatted = formatDeletedIssue(issue as never);
 
     expect(formatted.issueKey).toBe('ENG-99');
     expect(formatted.id).toBe('issue-1');

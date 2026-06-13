@@ -34,6 +34,16 @@ describe('useSlugChecker', () => {
     expect(checkSlugAvailability).not.toHaveBeenCalled();
   });
 
+  it('stays idle for empty slug', async () => {
+    const { result } = renderHook(() => useSlugChecker(''));
+
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(300);
+    });
+
+    expect(result.current.status).toBe('idle');
+  });
+
   it('marks slug as available', async () => {
     checkSlugAvailability.mockResolvedValue({ available: true, slug: 'acme-corp' });
 
