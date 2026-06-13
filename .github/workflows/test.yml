@@ -1,0 +1,61 @@
+name: Test
+
+on:
+  push:
+    branches: [main]
+    paths: ['backend/**', '.github/workflows/test.yml']
+  pull_request:
+    paths: ['backend/**', '.github/workflows/test.yml']
+
+jobs:
+  backend:
+    name: Backend tests
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: dodesk_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U test -d dodesk_test"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DATABASE_URL: postgresql://test:test@localhost:5432/dodesk_test
+      BETTER_AUTH_SECRET: ci-test-secret-at-least-thirty-two-chars
+      BETTER_AUTH_URL: http://localhost:5033
+      VITEST_WITH_DB: '1'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install dependencies
+        working-directory: backend
+        run: npm ci
+
+      - name: Generate Prisma client
+        working-directory: backend
+        run: npx prisma generate
+
+      - name: Run migrations
+        working-directory: backend
+        run: npx prisma migrate deploy
+
+      - name: Run tests
+        working-directory: backend
+        run: npm run test:all:coverage

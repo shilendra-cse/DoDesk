@@ -22,9 +22,10 @@ This document is the source of truth for adding and maintaining the DoDesk test 
 | 3. Unit tests — utils | ✅ Done | `slug`, `isValidEmail` (10 tests) |
 | 4. Unit tests — errors & formatters | ✅ Done | `AppError`, `issue.types`, `team.types` |
 | 5. Unit tests — middleware | ✅ Done | `validate`, `errorHandler`, `apiResponse`, `asyncHandler` |
-| 6. Service tests (mocked) | ⬜ Next | `issue.service`, `workspace.service`, … |
-| 7. Integration tests | ⬜ Planned | Supertest + Postgres |
-| 8. CI gate | ⬜ Planned | GitHub Actions on PR |
+| 5b. Unit tests — schemas | ✅ Done | All resource `*.schema.ts` files |
+| 6. Service tests (mocked) | ✅ Done | `issue`, `team`, `workspace` services |
+| 7. Integration tests | ✅ Done | Health, issue, workspace, team, comment, filter, user |
+| 8. CI gate | ✅ Done | `test:all:coverage` enforces ≥85% lines |
 | 9. Client tests | ⬜ Planned | hooks, stores, lib |
 
 ---
@@ -148,10 +149,7 @@ All files under `backend/src/**/*.ts` except exclusions below.
 
 ### Viewing coverage
 
-```bash
-cd backend && npm run test:coverage
-open coverage/index.html    # green = tested, red = missed
-```
+Coverage scripts are not wired up yet. When added later, they will run tests with `--coverage` and open `backend/coverage/index.html`.
 
 ---
 
@@ -160,12 +158,26 @@ open coverage/index.html    # green = tested, red = missed
 From **project root**:
 
 ```bash
-npm test                 # run backend tests once
-npm run test:watch       # re-run on save
-npm run test:coverage    # run + coverage report
+npm test                    # fast — unit + health checks (no DB)
+npm run test:coverage       # same + coverage report
+npm run test:all            # full suite including DB integration tests
+npm run test:all:coverage   # full suite + coverage (enforces thresholds in CI)
+npm run test:watch          # re-run on save
 ```
 
+Open HTML coverage report: `open backend/coverage/index.html`
+
 From **`backend/`** — same scripts directly.
+
+### Test database (for `test:all`)
+
+```bash
+cd backend
+npm run test:db:up       # start Postgres on port 5433
+npm run test:db:migrate  # apply migrations
+npm run test:all         # run everything
+npm run test:db:down     # stop Postgres
+```
 
 ---
 
@@ -216,7 +228,7 @@ describe('myFunction', () => {
 ### Phase 1 — Tooling ✅
 
 - [x] Install Vitest + coverage
-- [x] Add `test`, `test:watch`, `test:coverage` scripts
+- [x] Add `test`, `test:all`, `test:watch` scripts
 - [x] Configure `vitest.config.ts` and `tsconfig.test.json`
 - [x] Establish `tests/` folder structure
 
@@ -316,7 +328,7 @@ jobs:
       - run: npm ci --prefix backend
       - run: npx prisma migrate deploy --prefix backend
       - run: npm test --prefix backend
-      - run: npm run test:coverage --prefix backend
+      - run: npm run test:all --prefix backend
 ```
 
 Add coverage thresholds to `vitest.config.ts` once stable:
@@ -391,7 +403,7 @@ When shipping new backend code:
 - [ ] Add unit tests for any pure functions or formatters
 - [ ] Add service tests if new business rules in `*.service.ts`
 - [ ] Add integration test if new route in `*.route.ts`
-- [ ] Run `npm run test:coverage` — no regression below threshold
+- [ ] Add coverage script later (`--coverage` + thresholds)
 - [ ] Place tests in `tests/unit/` or `tests/integration/` mirroring `src/`
 
 ---

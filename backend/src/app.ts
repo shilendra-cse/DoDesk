@@ -6,6 +6,7 @@ import { toNodeHandler } from 'better-auth/node';
 import { auth } from './lib/auth';
 import apiRoutes from './routes';
 import { errorHandler } from './shared/errors/errorHandler';
+import { buildCorsOrigins } from './shared/utils/corsOrigins';
 import prisma from './shared/db/prisma';
 
 dotenv.config();
@@ -13,17 +14,7 @@ dotenv.config();
 export const app = express();
 
 app.use(cors({
-  origin: [
-    'http://localhost:5173',
-    'http://localhost:3000',
-    'http://dodesk-client-alb-1530009405.eu-north-1.elb.amazonaws.com',
-    'https://dodesk.app',
-    'http://dodesk.app',
-    'https://api.dodesk.app',
-    'https://dodesk-server.onrender.com',
-    'https://do-desk.vercel.app',
-    ...(process.env.FRONTEND_URL ? [process.env.FRONTEND_URL] : []),
-  ],
+  origin: buildCorsOrigins(process.env.FRONTEND_URL),
   credentials: true,
 }));
 

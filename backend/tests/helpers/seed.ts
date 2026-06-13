@@ -50,3 +50,22 @@ export async function seedUserWithTeam() {
 
   return { user, workspace, team };
 }
+
+export async function seedUserWithIssue() {
+  const { user, workspace, team } = await seedUserWithTeam();
+
+  const issue = await prisma.issue.create({
+    data: {
+      title: 'Test issue',
+      number: 1,
+      workspaceId: workspace.id,
+      teamId: team.id,
+      creatorId: user.id,
+      state: 'todo',
+      priority: 0,
+      labels: [],
+    },
+  });
+
+  return { user, workspace, team, issue };
+}

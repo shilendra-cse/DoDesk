@@ -1,4 +1,5 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
+import { z } from 'zod';
 import { validate } from '@/shared/middleware/validate.middleware';
 import { createIssueSchema } from '@/resources/issues/issue.schema';
 import { AppError } from '@/shared/errors/AppError';
@@ -59,5 +60,22 @@ describe('validate middleware', () => {
         expect.objectContaining({ field: 'params.teamId' }),
       ]),
     );
+  });
+
+  it('passes through non-Zod errors unchanged', () => {
+    const unexpected = new Error('Unexpected parse failure');
+    const schema = {
+      parse: vi.fn().mockImplementation(() => {
+        throw unexpected;
+      }),
+    } as unknown as z.ZodSchema;
+
+    const req = createMockRequest();
+    const res = createMockResponse();
+    const next = createMockNext();
+
+    validate(schema)(req, res, next);
+
+    expect(next).toHaveBeenCalledWith(unexpected);
   });
 });

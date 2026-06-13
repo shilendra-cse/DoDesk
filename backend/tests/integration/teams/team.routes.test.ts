@@ -39,7 +39,18 @@ describe.skipIf(!runDbTests)('Team routes (integration + DB)', () => {
     expect(response.body.data.teams[0].is_member).toBe(true);
   });
 
-    it('returns 400 for invalid team key', async () => {
+  it('GET /api/workspaces/:workspaceId/teams/user returns user teams', async () => {
+    const { user, workspace } = await seedUserWithTeam();
+    setAuthUser({ id: user.id, email: user.email, name: user.name });
+
+    const response = await request(app).get(`/api/workspaces/${workspace.id}/teams/user`);
+
+    expect(response.status).toBe(200);
+    expect(response.body.data.teams).toHaveLength(1);
+    expect(response.body.data.teams[0].role).toBe('admin');
+  });
+
+  it('returns 400 for invalid team key', async () => {
     const { user, workspace } = await seedUserWithTeam();
     setAuthUser({ id: user.id, email: user.email, name: user.name });
 

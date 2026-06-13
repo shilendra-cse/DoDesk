@@ -81,4 +81,30 @@ describe('teamService', () => {
       expect(result[0]?.is_member).toBe(true);
     });
   });
+
+  describe('getUserTeams', () => {
+    it('returns teams sorted by joined date', async () => {
+      const older = new Date('2024-01-01');
+      const newer = new Date('2025-01-01');
+      vi.mocked(teamQuery.findUserTeamsInWorkspace).mockResolvedValue([
+        {
+          id: 'team-1',
+          name: 'Eng',
+          key: 'ENG',
+          members: [{ role: 'admin', joinedAt: older }],
+        },
+        {
+          id: 'team-2',
+          name: 'Design',
+          key: 'DES',
+          members: [{ role: 'member', joinedAt: newer }],
+        },
+      ] as never);
+
+      const result = await teamService.getUserTeams('workspace-1', 'user-1');
+
+      expect(result[0]?.id).toBe('team-2');
+      expect(result[0]?.role).toBe('member');
+    });
+  });
 });

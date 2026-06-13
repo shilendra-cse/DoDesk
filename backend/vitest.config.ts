@@ -26,7 +26,7 @@ export default defineConfig({
         'src/shared/db/**',
       ],
       thresholds: process.env.VITEST_WITH_DB === '1'
-        ? { lines: 58, branches: 40, functions: 40, statements: 58 }
+        ? { lines: 85, branches: 85, functions: 82, statements: 84 }
         : undefined,
     },
   },
