@@ -1,10 +1,10 @@
 {
   "name": "employee-task-manager",
   "version": "1.0.0",
-  "main": "dist/index.js",
+  "main": "dist/server.js",
   "scripts": {
-    "start": "node dist/index.js",
-    "dev": "nodemon src/index.ts",
+    "start": "node dist/server.js",
+    "dev": "nodemon src/server.ts",
     "build": "tsc",
     "build:watch": "tsc --watch"
   },
@@ -28,7 +28,8 @@
     "open": "^10.1.1",
     "pg": "^8.14.1",
     "resend": "^4.4.1",
-    "uuid": "^11.1.0"
+    "uuid": "^11.1.0",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
