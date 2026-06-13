@@ -47,17 +47,17 @@ export const issueService = {
 
   getComments: async (issueId: string): Promise<Comment[]> => {
     const response = await api.get(`/api/issues/${issueId}/comments`)
-    return response.data.comments || []
+    return unwrap<{ comments: Comment[] }>(response).comments || []
   },
 
   createComment: async (issueId: string, content: string): Promise<Comment> => {
     const response = await api.post(`/api/issues/${issueId}/comments`, { content })
-    return response.data.comment
+    return unwrap<{ comment: Comment }>(response).comment
   },
 
   updateComment: async (commentId: string, content: string): Promise<Comment> => {
     const response = await api.put(`/api/comments/${commentId}`, { content })
-    return response.data.comment
+    return unwrap<{ comment: Comment }>(response).comment
   },
 
   deleteComment: async (commentId: string): Promise<void> => {

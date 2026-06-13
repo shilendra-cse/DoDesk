@@ -36,12 +36,12 @@ export const useWorkspaceStore = create<WorkspaceStoreState>((set, get) => ({
     set({ isLoading: true })
     try {
       const [userResponse, workspacesResponse] = await Promise.all([
-        api.get('/api/user'),
+        api.get('/api/users/me'),
         api.get('/api/workspaces')
       ])
       const workspaces: Workspace[] = unwrap<{ workspaces: Workspace[] }>(workspacesResponse).workspaces || []
-      const lastActiveWorkspaceId = userResponse.data.user.lastActiveWorkspaceId || null
-      const currentUser = userResponse.data.user
+      const lastActiveWorkspaceId = unwrap<{ user: { lastActiveWorkspaceId: string | null } }>(userResponse).user.lastActiveWorkspaceId || null
+      const currentUser = unwrap<{ user: { id: string; email: string; name?: string } }>(userResponse).user
 
       // Set current workspace based on last active, or fallback to first
       let current: Workspace | null = null
