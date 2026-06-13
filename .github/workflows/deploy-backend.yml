@@ -1,9 +1,10 @@
 name: Deploy Backend to ECS
 
 on:
-  push:
-    branches: [ main ]
-    paths: [ 'backend/**' ]
+  # Disabled while AWS is not in use. Re-enable automatic deploys by uncommenting:
+  # push:
+  #   branches: [ main ]
+  #   paths: [ 'backend/**' ]
   workflow_dispatch:
 
 env:
