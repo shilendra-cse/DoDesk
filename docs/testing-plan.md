@@ -358,8 +358,11 @@ Also test: 401 without auth, 400 on validation errors, 404 on missing resources.
 `.github/workflows/ci.yml` runs on push/PR to `main`:
 
 1. **Lint** — `eslint` (backend), `next lint` (client)
-2. **Typecheck** — `tsc --noEmit` on src (+ backend tests)
-3. **Test** — `test:all:coverage` (backend + Postgres), `test:coverage` (client)
+2. **Typecheck** — `tsc --noEmit` (after Prisma generate on backend)
+3. **Test** — fast feedback before build (`test:coverage` / `test:all:coverage`)
+4. **Build** — final deploy gate (`tsc`, `next build`)
+
+Backend and client jobs run in parallel on GitHub Actions.
 
 From project root: `npm run lint`, `npm run typecheck`, `npm run ci` (full local CI).
 

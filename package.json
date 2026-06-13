@@ -13,8 +13,12 @@
     "test:all": "npm run test:all --prefix backend",
     "test:all:coverage": "npm run test:all:coverage --prefix backend",
     "test:watch": "npm run test:watch --prefix backend",
-    "ci": "npm run lint && npm run typecheck && npm run test:all:coverage --prefix backend && npm run test:coverage --prefix client",
-    "build": "next build",
+    "ci": "npm run lint && npm run typecheck && npm run test:coverage --prefix client && npm run ci:backend && npm run build:client",
+    "ci:backend": "npm run ci:backend:test && npm run build --prefix backend",
+    "ci:backend:test": "cd backend && npx prisma generate && npx prisma migrate deploy && npm run test:all:coverage",
+    "build": "npm run build:backend && npm run build:client",
+    "build:backend": "npm run build --prefix backend",
+    "build:client": "npm run build --prefix client",
     "start": "next start"
   },
   "devDependencies": {

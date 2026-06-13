@@ -52,13 +52,13 @@ jobs:
         working-directory: backend
         run: npm run lint
 
-      - name: Typecheck
-        working-directory: backend
-        run: npm run typecheck
-
       - name: Generate Prisma client
         working-directory: backend
         run: npx prisma generate
+
+      - name: Typecheck
+        working-directory: backend
+        run: npm run typecheck
 
       - name: Run migrations
         working-directory: backend
@@ -67,6 +67,10 @@ jobs:
       - name: Test
         working-directory: backend
         run: npm run test:all:coverage
+
+      - name: Build
+        working-directory: backend
+        run: npm run build
 
   client:
     name: Client
@@ -98,3 +102,7 @@ jobs:
       - name: Test
         working-directory: client
         run: npm run test:coverage
+
+      - name: Build
+        working-directory: client
+        run: npm run build
