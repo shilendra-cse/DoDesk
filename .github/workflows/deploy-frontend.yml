@@ -1,9 +1,10 @@
 name: Deploy Frontend to ECS
 
 on:
-  push:
-    branches: [ main ]
-    paths: [ 'client/**' ]
+  # Disabled while AWS is not in use. Re-enable automatic deploys by uncommenting:
+  # push:
+  #   branches: [ main ]
+  #   paths: [ 'client/**' ]
   workflow_dispatch:
 
 env:
