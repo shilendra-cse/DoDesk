@@ -18,14 +18,4 @@ export const userService = {
       lastActiveWorkspace: user.lastActiveWorkspace,
     };
   },
-
-  async getMe(userId: string) {
-    const user = await userQuery.findByIdMinimal(userId);
-
-    if (!user) {
-      throw new AppError(ErrorCodes.USER_NOT_FOUND, 404, 'User not found');
-    }
-
-    return { user };
-  },
 };
