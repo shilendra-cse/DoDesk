@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { Workspace, Team, TeamMember } from '@/types/workspace'
 import api from '@/lib/axios'
+import { unwrap } from '@/lib/api'
 
 interface WorkspaceStoreState {
   workspaces: Workspace[]
@@ -36,9 +37,9 @@ export const useWorkspaceStore = create<WorkspaceStoreState>((set, get) => ({
     try {
       const [userResponse, workspacesResponse] = await Promise.all([
         api.get('/api/user'),
-        api.get('/api/workspaces?include=teams,members')
+        api.get('/api/workspaces')
       ])
-      const workspaces: Workspace[] = workspacesResponse.data.workspaces || []
+      const workspaces: Workspace[] = unwrap<{ workspaces: Workspace[] }>(workspacesResponse).workspaces || []
       const lastActiveWorkspaceId = userResponse.data.user.lastActiveWorkspaceId || null
       const currentUser = userResponse.data.user
 
@@ -56,7 +57,7 @@ export const useWorkspaceStore = create<WorkspaceStoreState>((set, get) => ({
         currentWorkspace: current,
         hasWorkspaces: workspaces.length > 0,
         teams: current?.teams || [],
-        members: [], // Don't set members here - use fetchMembers() instead
+        members: [],
         currentUser,
         isLoading: false
       })
@@ -79,14 +80,9 @@ export const useWorkspaceStore = create<WorkspaceStoreState>((set, get) => ({
     const currentWorkspace = get().currentWorkspace
     if (!currentWorkspace) return
     try {
-      const res = await api.get(`/api/workspace/${currentWorkspace.id}/teams`)
-      const teams = res.data.teams || []
-      // Don't set members here - use fetchMembers() instead to avoid duplicates
-    
-      set({
-        teams,
-        // Don't set members - let fetchMembers() handle it
-      })
+      const res = await api.get(`/api/workspaces/${currentWorkspace.id}/teams`)
+      const teams = unwrap<{ teams: Team[] }>(res).teams || []
+      set({ teams })
     } catch (error) {
       set({ teams: [] })
       console.error('Failed to fetch teams:', error)
@@ -97,13 +93,12 @@ export const useWorkspaceStore = create<WorkspaceStoreState>((set, get) => ({
     const currentWorkspace = get().currentWorkspace
     if (!currentWorkspace) return
     try {
-      const res = await api.get(`/api/workspace/${currentWorkspace.id}/members/unique`)
-      // Transform the backend response to match the expected TeamMember structure
-      const backendMembers = res.data.data?.members || []
-      const transformedMembers = backendMembers.map((member: { id: string; user_id: string; name?: string; email: string }) => ({
+      const res = await api.get(`/api/workspaces/${currentWorkspace.id}/members/unique`)
+      const backendMembers = unwrap<{ members: Array<{ id: string; user_id: string; name?: string; email: string }> }>(res).members || []
+      const transformedMembers = backendMembers.map((member) => ({
         id: member.id,
         userId: member.user_id,
-        role: 'member' as const, // Default role since backend doesn't provide it
+        role: 'member' as const,
         user: {
           id: member.user_id,
           name: member.name,
@@ -121,12 +116,12 @@ export const useWorkspaceStore = create<WorkspaceStoreState>((set, get) => ({
     const workspace = get().getWorkspaceBySlug(slug)
     if (workspace) {
       try {
-        await api.post('/api/user/set-last-active-workspace', { workspace_id: workspace.id })
+        await api.patch('/api/users/me/active-workspace', { workspaceId: workspace.id })
         set({
           currentWorkspace: workspace,
           lastActiveWorkspaceId: workspace.id,
           teams: workspace.teams || [],
-          members: [] // Clear members to avoid duplicates, let components fetch unique members
+          members: []
         })
       } catch (error) {
         console.error('Failed to switch workspace:', error)
@@ -136,28 +131,25 @@ export const useWorkspaceStore = create<WorkspaceStoreState>((set, get) => ({
 
   addWorkspace: async (workspace: Workspace) => {
     try {
-      // 1. Add workspace to the list
       set(state => {
         const exists = state.workspaces.some(w => w.id === workspace.id)
         if (exists) return state
         return { workspaces: [...state.workspaces, workspace] }
       })
-      
-      // 2. Set as current workspace
+
       set({
         currentWorkspace: workspace,
         lastActiveWorkspaceId: workspace.id,
         teams: workspace.teams || [],
-        members: [] // Don't set members here - use fetchMembers() instead
+        members: []
       })
-      
-      // 3. Update user's last active workspace
+
       try {
-        await api.post('/api/user/set-last-active-workspace', { workspace_id: workspace.id })
+        await api.patch('/api/users/me/active-workspace', { workspaceId: workspace.id })
       } catch (error) {
         console.error('Failed to set last active workspace:', error)
       }
-      
+
     } catch (error) {
       console.error('Error adding workspace:', error)
       throw error
@@ -169,20 +161,18 @@ export const useWorkspaceStore = create<WorkspaceStoreState>((set, get) => ({
     return workspaces.find(w => w.slug === slug) || null
   },
 
-  // client/stores/workspaceStore.ts
   setCurrentWorkspaceBySlug: (slug: string) => {
     const workspace = get().workspaces.find(w => w.slug === slug)
     const currentState = get()
-    
-    // If we're setting the same workspace that's already current, don't reset teams/members
+
     if (currentState.currentWorkspace?.id === workspace?.id) {
-      return // Do nothing - keep existing teams/members
+      return
     }
-    
+
     set({
       currentWorkspace: workspace || null,
       teams: workspace?.teams || [],
-      members: [] // Clear members to avoid duplicates, let components fetch unique members
+      members: []
     })
   }
 }))

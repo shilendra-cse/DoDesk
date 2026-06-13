@@ -27,6 +27,7 @@ import {
 import { Plus } from "lucide-react"
 import { useWorkspaceStore } from "@/stores/workspaceStore"
 import api from "@/lib/axios"
+import { unwrap } from "@/lib/api"
 import { toast } from "react-hot-toast"
 
 // Type for API error response
@@ -76,14 +77,15 @@ export function CreateTeamDialog({ onTeamCreated }: CreateTeamDialogProps) {
 
     setIsLoading(true)
     try {
-      const response = await api.post(`/api/workspace/${currentWorkspace.id}/teams`, {
+      const response = await api.post(`/api/workspaces/${currentWorkspace.id}/teams`, {
         name: data.name,
         key: data.key,
         description: data.description || "",
         color: data.color || "#3B82F6",
       })
 
-      if (response.data.data?.team) {
+      const { team } = unwrap<{ team: unknown }>(response)
+      if (team) {
         // Refresh teams list
         await fetchTeams()
         

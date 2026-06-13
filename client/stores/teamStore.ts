@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { Team, TeamMember } from '@/types/workspace'
 import api from '@/lib/axios'
+import { unwrap } from '@/lib/api'
 
 interface TeamStoreState {
   teams: Team[]
@@ -25,8 +26,8 @@ export const useTeamStore = create<TeamStoreState>((set) => ({
   fetchTeams: async (workspaceId: string) => {
     set({ isLoading: true, error: null })
     try {
-      const res = await api.get(`/api/workspaces/${workspaceId}/teams?include=members`)
-      set({ teams: res.data.teams || [], isLoading: false })
+      const res = await api.get(`/api/workspaces/${workspaceId}/teams`)
+      set({ teams: unwrap<{ teams: Team[] }>(res).teams || [], isLoading: false })
     } catch (error) {
         const message = error instanceof Error ? error.message : 'Failed to fetch teams'
       set({ error: message, isLoading: false })
@@ -48,8 +49,9 @@ export const useTeamStore = create<TeamStoreState>((set) => ({
     set({ isLoading: true, error: null })
     try {
       const res = await api.post(`/api/workspaces/${workspaceId}/teams`, data)
-      set(state => ({ teams: [...state.teams, res.data.team], isLoading: false }))
-      return res.data.team
+      const team = unwrap<{ team: Team }>(res).team
+      set(state => ({ teams: [...state.teams, team], isLoading: false }))
+      return team
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Failed to add team'
       set({ error: message, isLoading: false })

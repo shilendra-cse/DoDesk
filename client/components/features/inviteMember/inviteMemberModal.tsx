@@ -32,6 +32,7 @@ interface ApiError {
   response?: {
     data?: {
       message?: string
+      error?: { message?: string }
     }
   }
   message?: string
@@ -83,7 +84,7 @@ export function InviteMemberModal({ isOpen, onClose }: InviteMemberModalProps) {
     setInviteStatus({ type: '', message: '' })
 
     try {
-      const response = await api.post(`/api/workspace/${currentWorkspace.id}/invite`, {
+      const response = await api.post(`/api/workspaces/${currentWorkspace.id}/invite`, {
         email: data.email.trim().toLowerCase(),
       })
 
@@ -114,7 +115,9 @@ export function InviteMemberModal({ isOpen, onClose }: InviteMemberModalProps) {
       const errorMessage = error instanceof Error 
         ? error.message 
         : typeof error === 'object' && error !== null && 'response' in error
-        ? (error as ApiError).response?.data?.message || "Failed to send invitation"
+        ? (error as ApiError).response?.data?.error?.message
+          || (error as ApiError).response?.data?.message
+          || "Failed to send invitation"
         : "Failed to send invitation"
       
       setInviteStatus({
