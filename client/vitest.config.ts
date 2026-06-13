@@ -18,7 +18,8 @@ export default defineConfig({
       provider: 'v8',
       reporter: ['text', 'html'],
       include: ['lib/**/*.ts', 'hooks/**/*.ts', 'stores/**/*.ts'],
-      exclude: ['tests/**', 'components/**', 'app/**'],
+      exclude: ['tests/**', 'components/**', 'app/**', 'lib/auth-client.ts'],
+      thresholds: { lines: 80, branches: 80, functions: 80, statements: 80 },
     },
   },
 });

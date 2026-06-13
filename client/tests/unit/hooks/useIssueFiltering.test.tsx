@@ -94,4 +94,33 @@ describe('useIssueFiltering', () => {
     expect(result.current.filteredIssues).toHaveLength(1);
     expect(result.current.filteredIssues[0]?.state).toBe('done');
   });
+
+  it('resets filters when default filter is cleared', () => {
+    useSavedFilterStore.setState({
+      defaultFilter: {
+        id: 'filter-1',
+        name: 'My view',
+        filter_config: { stateFilter: 'done' },
+      } as never,
+    });
+
+    const { result, rerender } = renderHook(() => useIssueFiltering());
+
+    act(() => {
+      useSavedFilterStore.setState({ defaultFilter: null });
+    });
+    rerender();
+
+    expect(result.current.stateFilter).toBe('All');
+  });
+
+  it('builds filter summary with sort option', () => {
+    const { result } = renderHook(() => useIssueFiltering());
+
+    act(() => {
+      result.current.setSortOption('Priority');
+    });
+
+    expect(result.current.filterSummary).toContain('Sort: Priority');
+  });
 });

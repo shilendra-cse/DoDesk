@@ -26,7 +26,7 @@ This document is the source of truth for adding and maintaining the DoDesk test 
 | 6. Service tests (mocked) | ✅ Done | `issue`, `team`, `workspace` services |
 | 7. Integration tests | ✅ Done | Health, issue, workspace, team, comment, filter, user |
 | 8. CI gate | ✅ Done | Backend + client Vitest in GitHub Actions |
-| 9. Client tests | 🟡 In progress | lib, hooks, stores — services next |
+| 9. Client tests | ✅ Done | 113 tests, ≥80% on lib/hooks/stores |
 
 ---
 

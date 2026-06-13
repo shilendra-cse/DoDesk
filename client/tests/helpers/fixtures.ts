@@ -27,3 +27,39 @@ export function buildIssue(overrides: Partial<Issue> = {}): Issue {
     ...overrides,
   };
 }
+
+export function buildTeam(overrides: Partial<import('@/types/workspace').Team> = {}) {
+  return {
+    id: 'team-1',
+    name: 'Engineering',
+    key: 'ENG',
+    color: '#000',
+    members: [],
+    ...overrides,
+  };
+}
+
+export function buildSavedFilter(overrides: Partial<import('@/types/filter').SavedFilter> = {}) {
+  return {
+    id: 'filter-1',
+    name: 'My view',
+    filter_config: { stateFilter: 'todo' },
+    is_default: false,
+    user_id: 'user-1',
+    workspace_id: 'workspace-1',
+    created_at: '2024-01-01T00:00:00.000Z',
+    updated_at: '2024-01-01T00:00:00.000Z',
+    ...overrides,
+  };
+}
+
+export function buildComment(overrides: Partial<import('@/services/commentService').Comment> = {}) {
+  return {
+    id: 'comment-1',
+    content: 'Looks good',
+    issueId: 'issue-1',
+    createdAt: '2024-01-01T00:00:00.000Z',
+    updatedAt: '2024-01-01T00:00:00.000Z',
+    ...overrides,
+  };
+}
