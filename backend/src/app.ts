@@ -4,8 +4,6 @@ import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 import { toNodeHandler } from 'better-auth/node';
 import { auth } from './lib/auth';
-import { routes as legacyRoutes } from './utils/router';
-import './legacyRoutes';
 import apiRoutes from './routes';
 import { errorHandler } from './shared/errors/errorHandler';
 import prisma from './shared/db/prisma';
@@ -34,7 +32,6 @@ app.all('/api/auth/*splat', toNodeHandler(auth));
 app.use(cookieParser());
 app.use(express.json());
 
-app.use('/api', legacyRoutes);
 app.use('/api', apiRoutes);
 
 app.get('/', (_req, res) => {

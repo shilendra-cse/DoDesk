@@ -1,38 +1,29 @@
 import api from '@/lib/axios'
+import { unwrap } from '@/lib/api'
 import { SavedFilter, CreateFilterData } from '@/types/filter'
 
 export const savedFilterService = {
-  // Get all saved filters for a workspace
   getSavedFilters: async (workspaceId: string): Promise<SavedFilter[]> => {
     const response = await api.get(`/api/workspaces/${workspaceId}/filters`)
-    return response.data.filters || []
+    return unwrap<{ filters: SavedFilter[] }>(response).filters || []
   },
 
-  // Create a new saved filter
   createFilter: async (workspaceId: string, filterData: CreateFilterData): Promise<SavedFilter> => {
     const response = await api.post(`/api/workspaces/${workspaceId}/filters`, filterData)
-    return response.data.filter
+    return unwrap<{ filter: SavedFilter }>(response).filter
   },
 
-  // Delete a saved filter
-  deleteFilter: async (workspaceId: string, filterId: string): Promise<void> => {
-    await api.delete(`/api/workspaces/${workspaceId}/filters/${filterId}/remove`)
+  deleteFilter: async (_workspaceId: string, filterId: string): Promise<void> => {
+    await api.delete(`/api/filters/${filterId}`)
   },
 
-  // Set a filter as default
-  setDefaultFilter: async (workspaceId: string, filterId: string): Promise<SavedFilter> => {
-    const response = await api.post(`/api/workspaces/${workspaceId}/filters/${filterId}/default`)
-    return response.data.filter
+  setDefaultFilter: async (_workspaceId: string, filterId: string): Promise<SavedFilter> => {
+    const response = await api.put(`/api/filters/${filterId}`, { isDefault: true })
+    return unwrap<{ filter: SavedFilter }>(response).filter
   },
 
-  // Get the default filter
   getDefaultFilter: async (workspaceId: string): Promise<SavedFilter | null> => {
-    try {
-      const response = await api.get(`/api/workspaces/${workspaceId}/filters/default`)
-      return response.data.filter
-    } catch (error) {
-      console.error('Error getting default filter:', error)
-      return null
-    }
-  }
-}   
+    const response = await api.get(`/api/workspaces/${workspaceId}/filters/default`)
+    return unwrap<{ filter: SavedFilter | null }>(response).filter
+  },
+}

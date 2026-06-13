@@ -1,4 +1,5 @@
 import api from '@/lib/axios'
+import { unwrap } from '@/lib/api'
 
 export interface Comment {
   id: string
@@ -28,17 +29,17 @@ export interface UpdateCommentData {
 class CommentService {
   async getComments(issueId: string): Promise<Comment[]> {
     const response = await api.get(`/api/issues/${issueId}/comments`)
-    return response.data.data.comments
+    return unwrap<{ comments: Comment[] }>(response).comments
   }
 
   async createComment(issueId: string, data: CreateCommentData): Promise<Comment> {
     const response = await api.post(`/api/issues/${issueId}/comments`, data)
-    return response.data.data.comment
+    return unwrap<{ comment: Comment }>(response).comment
   }
 
   async updateComment(commentId: string, data: UpdateCommentData): Promise<Comment> {
     const response = await api.put(`/api/comments/${commentId}`, data)
-    return response.data.data.comment
+    return unwrap<{ comment: Comment }>(response).comment
   }
 
   async deleteComment(commentId: string): Promise<void> {
@@ -46,4 +47,4 @@ class CommentService {
   }
 }
 
-export const commentService = new CommentService() 
+export const commentService = new CommentService()
